@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Recipe Book</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Your CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-root">
+
+    <!-- HEADER -->
+    <header class="app-header" role="banner">
+      <button id="backBtn" class="icon-btn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="brand">
+        <div class="logo"><img src="logo-img.png" alt="Logo"></div>
+        <div class="brand-title"><img src="logo-text.png" alt="Brand"></div>
+      </div>
+      <div style="width:38px"></div>
+    </header>
+
+    <main class="container" id="app">
+
+      <!-- HOME -->
+      <section id="home" class="page active" aria-labelledby="homeTitle">
+        <div class="home-inner">
+          <div class="home-logo">
+            <div class="logo-circle"><img src="logo-img.png" alt="Logo"></div>
+          </div>
+          <h1 id="homeTitle">My Recipe Book</h1>
+          <p class="lead">Quick and clean recipes for busy students. Click a link below to start.</p>
+          <nav class="home-links" aria-label="Primary navigation">
+            <a href="#meals" class="btn big" data-target="meals">Meals</a>
+            <a href="#drinks" class="btn big ghost" data-target="drinks">Drinks & Desserts</a>
+            <a href="#about" class="btn big ghost-outline" data-target="about">About / Notes</a>
+          </nav>
+        </div>
+      </section>
+
+      <!-- MEALS -->
+      <section id="meals" class="page" aria-labelledby="mealsTitle">
+        <h2 id="mealsTitle">Meals</h2>
+        <p class="small">Choose a category to see recipe links.</p>
+        <div class="categories">
+          <button class="category-btn" data-cat="breakfast">Breakfast</button>
+          <button class="category-btn" data-cat="lunch">Lunch</button>
+          <button class="category-btn" data-cat="dinner">Dinner</button>
+          <button class="category-btn" data-cat="soup">Soups</button>
+        </div>
+        <div class="list-wrap">
+          <ul id="recipeLinks" class="link-list" aria-live="polite"></ul>
+        </div>
+      </section>
+
+      <!-- DRINKS & DESSERTS -->
+      <section id="drinks" class="page" aria-labelledby="drinksTitle">
+        <h2 id="drinksTitle">Drinks & Desserts</h2>
+        <p class="small">Sweet endings and refreshing sips.</p>
+        <div class="list-wrap">
+          <ul id="drinksList" class="link-list"></ul>
+        </div>
+      </section>
+
+      <!-- RECIPE PAGE -->
+      <section id="recipe" class="page recipe-page" aria-labelledby="recipeTitle">
+        <div class="recipe-cover" id="recipeCover">
+          <div class="cover-text" id="recipeCoverTitle">Recipe Title</div>
+        </div>
+        <div class="recipe-meta">
+          <div><b>Prep:</b> <span id="prepTime">-</span> min</div>
+          <div><b>Yield:</b> <span id="yield">-</span></div>
+        </div>
+        <h3 id="recipeTitle">Title goes here</h3>
+        <div class="recipe-body">
+          <div class="ingredients">
+            <h4>Ingredients</h4>
+            <ul id="ingredientsList" class="ingredients-list"></ul>
+          </div>
+          <div class="method">
+            <h4>Method</h4>
+            <ol id="stepsList" class="steps-list"></ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT / NOTES -->
+      <section id="about" class="page" aria-labelledby="aboutTitle">
+        <h2 id="aboutTitle">Notes & Resources</h2>
+        <p class="small">Swap your background or fonts here in the files:</p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const pages = document.querySelectorAll('.page');
+    const backBtn = document.getElementById('backBtn');
+
+    const state = {
+      history: [],
+      current: 'home',
+      lastCategory: null,
+      recipes: [
+        { id:'r1', title:"Spicy Lentil Soup", cat:'soup', prep:30, yield:'4', ingredients:['1 cup red lentils','1 onion','1 tsp cumin','Salt to taste'], steps:['Sweat the onions','Add lentils & water','Simmer 20 minutes','Blend & serve'] },
+        { id:'r2', title:"Simple Pancakes", cat:'breakfast', prep:20, yield:'8 pancakes', ingredients:['1 cup flour','1 egg','1 cup milk','1 tbsp sugar'], steps:['Mix ingredients','Pour batter','Flip when bubbles form','Serve warm'] },
+        { id:'r3', title:"Iced Hibiscus Tea", cat:'drinks', prep:10, yield:'3 cups', ingredients:['2 tbsp hibiscus','1L water','Honey to taste'], steps:['Boil water','Steep hibiscus 10 min','Chill and sweeten'] },
+        { id:'r4', title:"No-Bake Date Balls", cat:'dessert', prep:15, yield:'12 balls', ingredients:['1 cup dates','1/2 cup nuts','2 tbsp cocoa'], steps:['Blend ingredients','Roll into balls','Chill'] },
+        { id:'r5', title:"Cookies", cat:'dessert', prep:30, yield:'5 ½ dozen', ingredients:['1 cup butter','1 1/2 cups brown sugar','3 eggs','3 tbsp coffee','2 1/2 cups flour','1 tsp baking soda','1 tbsp cinnamon','1 tbsp allspice','1 cup raisins','1 cup pecans'], steps:['Cream butter, add sugar, beat until light','Add eggs, one at a time','Add coffee','Combine flour, soda, cinnamon, allspice, stir in raisins & pecans','Drop dough onto greased sheet, bake at 350°F for 8 min','Cool on wire racks'] },
+        { id:'r6', title:"Grilled Cheese Sandwich", cat:'lunch', prep:10, yield:'4', ingredients:['1/4 cup butter, softened','1 tbsp grated Parmesan cheese','8 Italian bread slices','4 provolone slices','4 mozzarella slices'], steps:['Stir butter & Parmesan','Spread 1 1/2 tsp butter on each bread slice, assemble with cheeses','Cook sandwiches on griddle 4 min each side until golden and melted'] },
+        { id:'r7', title:"Strawberry Milkshake", cat:'drinks', prep:10, yield:'4', ingredients:['8 oz strawberries','1/2 tsp vanilla','1 pint vanilla ice cream','1/4 cup milk'], steps:['Blend half strawberries, vanilla, 1 cup ice cream, 2 tbsp milk','Pour into 2 glasses, repeat for remaining','Serve immediately'] }
+      ],
+      currentRecipe: null
+    };
+
+    // show/hide pages
+    function showPage(id){
+      pages.forEach(p=> p.classList.toggle('active', p.id===id));
+      state.current = id;
+    }
+
+    function populateCategory(cat){
+      state.lastCategory = cat; // remember last category
+      const container = document.getElementById('recipeLinks');
+      container.innerHTML = '';
+      const list = state.recipes.filter(r=> r.cat === cat );
+      if(list.length===0){
+        container.innerHTML = '<li class="item small">No recipes yet for this category.</li>';
+        return;
+      }
+      list.forEach(r=>{
+        const li = document.createElement('li');
+        li.className = 'item';
+        li.innerHTML = `<a href="#recipe" class="recipe-link" data-id="${r.id}">${r.title} <i class="fa-solid fa-arrow-right arrow"></i></a>`;
+        container.appendChild(li);
+      });
+    }
+
+    function populateDrinks(){
+      const container = document.getElementById('drinksList');
+      container.innerHTML = '';
+      const list = state.recipes.filter(r=> r.cat==='drinks' || r.cat==='dessert' );
+      list.forEach(r=>{
+        const li = document.createElement('li');
+        li.className = 'item';
+        li.innerHTML = `<a href="#recipe" class="recipe-link" data-id="${r.id}">${r.title} <i class="fa-solid fa-mug-saucer"></i></a>`;
+        container.appendChild(li);
+      });
+    }
+
+    function openRecipeById(id){
+      const r = state.recipes.find(x=>x.id===id);
+      if(!r) return;
+      state.currentRecipe = r;
+      document.getElementById('recipeCoverTitle').textContent = r.title;
+      document.getElementById('recipeTitle').textContent = r.title;
+      document.getElementById('prepTime').textContent = r.prep || '-';
+      document.getElementById('yield').textContent = r.yield || '-';
+      // ingredients
+      const ing = document.getElementById('ingredientsList');
+      ing.innerHTML = '';
+      r.ingredients.forEach((it,i)=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<label class="chk"><input type="checkbox" data-index="${i}" /> <i class="fa-regular fa-square"></i> <span>${it}</span></label>`;
+        ing.appendChild(li);
+      });
+      // steps
+      const steps = document.getElementById('stepsList');
+      steps.innerHTML = '';
+      r.steps.forEach(s=>{
+        const li = document.createElement('li');
+        li.textContent = s;
+        steps.appendChild(li);
+      });
+      showPage('recipe');
+    }
+
+    // EVENTS
+    document.addEventListener('click',(e)=>{
+      const t = e.target.closest('[data-target]');
+      if(t){
+        if(state.current !== t.getAttribute('data-target')) state.history.push(state.current);
+        const target = t.getAttribute('data-target');
+        if(target==='meals'){ showPage('meals'); populateCategory('breakfast'); }
+        else if(target==='drinks'){ showPage('drinks'); populateDrinks(); }
+        else if(target==='about'){ showPage('about'); }
+        e.preventDefault(); return;
+      }
+
+      const catBtn = e.target.closest('.category-btn');
+      if(catBtn){
+        state.history.push(state.current);
+        populateCategory(catBtn.dataset.cat);
+        showPage('meals');
+        e.preventDefault(); return;
+      }
+
+      const rl = e.target.closest('.recipe-link');
+      if(rl){
+        state.history.push(state.current);
+        openRecipeById(rl.dataset.id);
+        e.preventDefault(); return;
+      }
+
+      if(e.target.closest('#backBtn')){
+        if(state.history.length>0){
+          const prev = state.history.pop();
+          showPage(prev);
+          if(prev==='meals' && state.lastCategory) populateCategory(state.lastCategory);
+          else if(prev==='drinks') populateDrinks();
+        } else showPage('home');
+      }
+    });
+
+    // INITIAL
+    showPage('home');
+    populateDrinks();
+  </script>
+</body>
+</html>
+
